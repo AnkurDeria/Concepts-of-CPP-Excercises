@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    add_compile_options(-Wall -Wextra -Wconversion -pedantic -Wfatal-errors -link hw02.lib)
+    add_compile_options(-Wall -Wextra -Wconversion -pedantic -Wfatal-errors )
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W3 /WX)
 
