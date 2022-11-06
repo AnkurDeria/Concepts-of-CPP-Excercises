@@ -3,8 +3,10 @@
 
 
 uint64_t factorial(uint64_t val) {
+    if (val==0)
+        return 1;
     if (val < 3)
-        return std::max(val,1);
+        return val;
     return val * factorial(val - 1);
 }
 
