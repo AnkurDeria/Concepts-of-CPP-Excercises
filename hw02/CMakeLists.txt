@@ -20,12 +20,10 @@ endif()
 
 set(HEADERS 
     hw02.h
-    combinatorics.h
 )
 
 set(SOURCES
     run.cpp
-    combinatorics.cpp
 )
-add_library(hw02)
+add_library(hw02 combinatorics.h combinatorics.cpp)
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
