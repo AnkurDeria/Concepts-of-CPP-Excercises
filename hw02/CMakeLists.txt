@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(hw02)
 # require C++20
 set(CMAKE_CXX_STANDARD 20)
-set(EXECUTABLE_NAME hw02)
+set(EXECUTABLE_NAME runhw02)
 # so language servers like clangd know what the buildsystem does
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -10,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    add_compile_options(-Wall -Wextra -Wconversion -pedantic -Wfatal-errors)
+    add_compile_options(-Wall -Wextra -Wconversion -pedantic -Wfatal-errors -link hw02.lib)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W3 /WX)
 
@@ -28,4 +27,5 @@ set(SOURCES
     run.cpp
     combinatorics.cpp
 )
+add_library(hw02)
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
