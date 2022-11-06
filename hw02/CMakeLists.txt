@@ -3,14 +3,10 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 20)
 set(EXECUTABLE_NAME runhw02)
 
-set(HEADERS 
-    hw02.h
-)
-
 set(SOURCES
     run.cpp
 )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
 add_library(hw02 combinatorics.h combinatorics.cpp)
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
 target_link_libraries(${EXECUTABLE_NAME} hw02)
