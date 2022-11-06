@@ -1,4 +1,5 @@
 #include "combinatorics.h"
+#include <algorithm>
 
 
 uint64_t factorial(uint64_t val) {
