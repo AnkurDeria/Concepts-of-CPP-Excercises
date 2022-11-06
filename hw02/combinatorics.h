@@ -19,3 +19,8 @@ uint64_t permutation(uint64_t val, uint64_t val2);
  * without repetition and without order.
  */
 uint64_t combination(uint64_t val, uint64_t val2);
+
+/**
+ * Checks if val2 < val 1
+ */
+bool numbersCheck(uint64_t val, uint64_t val2);
