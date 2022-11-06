@@ -9,6 +9,5 @@ set(SOURCES
 
 add_library(hw02 combinatorics.h combinatorics.cpp)
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
-target_include_directories(${EXECUTABLE_NAME} ${CMAKE_SOURCE_DIR})
+target_include_directories(hw02 ${CMAKE_SOURCE_DIR})
 target_link_libraries(${EXECUTABLE_NAME} hw02)
-target_compile_features( PUBLIC cxx_std_20)
