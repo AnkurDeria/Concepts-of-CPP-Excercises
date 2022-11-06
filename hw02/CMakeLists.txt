@@ -8,6 +8,6 @@ set(SOURCES
 )
 
 add_library(hw02 combinatorics.h combinatorics.cpp)
-target_include_directories(hw02 PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(hw02 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 target_link_libraries(${EXECUTABLE_NAME} hw02)
