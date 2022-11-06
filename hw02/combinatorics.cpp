@@ -3,7 +3,7 @@
 
 uint64_t factorial(uint64_t val) {
     if (val < 3)
-        return 2;
+        return val;
     return val * factorial(val - 1);
 }
 
