@@ -2,7 +2,7 @@
 # homework 3 cmake build configuration
 
 # sources to include in the homework library
-set(SOURCES contact_list.cpp contact_list.h)
+set(SOURCES contact_list.cpp)
 
 set(LIBRARY_NAME hw03)
 set(EXECUTABLE_NAME runhw03)
