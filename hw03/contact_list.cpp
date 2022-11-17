@@ -6,9 +6,8 @@
 #include <map>
 
 // TODO create implementation here!
-using namespace contact_list;
 
-bool add(storage& contacts, std::string_view name, number_t number)
+bool add(contact_list::storage& contacts, std::string_view name, contact_list::number_t number)
 {
 	if (name.empty())
 		return false;
@@ -21,7 +20,7 @@ bool add(storage& contacts, std::string_view name, number_t number)
 	return true;
 }
 
-number_t get_number_by_name(storage& contacts, std::string_view name)
+contact_list::number_t get_number_by_name(contact_list::storage& contacts, std::string_view name)
 {
 	const auto ret = std::find(
 		contacts.names.begin(), contacts.names.end(), static_cast<std::string>(name));
@@ -30,7 +29,7 @@ number_t get_number_by_name(storage& contacts, std::string_view name)
 	return -1;
 }
 
-std::string to_string(const storage& contacts)
+std::string to_string(const contact_list::storage& contacts)
 {
 	std::string result;
 	for (int i = 0; i < contacts.names.size(); i++)
@@ -40,7 +39,7 @@ std::string to_string(const storage& contacts)
 	return result;
 }
 
-bool remove(storage& contacts, std::string_view name)
+bool remove(contact_list::storage& contacts, std::string_view name)
 {
 	if (name.empty())
 		return false;
@@ -57,7 +56,7 @@ bool remove(storage& contacts, std::string_view name)
 	return false;
 }
 
-void sort(storage& contacts)
+void sort(contact_list::storage& contacts)
 {
 	std::map<std::string, int> dict_contacts;
 	for(int i = 0; i < contacts.names.size(); i++)
@@ -73,14 +72,14 @@ void sort(storage& contacts)
 	}
 }
 
-std::string get_name_by_number(storage& contacts, number_t number)
+std::string get_name_by_number(contact_list::storage& contacts, contact_list::number_t number)
 {
 	if (const auto ret = std::find(contacts.numbers.begin(), contacts.numbers.end(), number); ret != contacts.numbers.end())
 		return contacts.names[ret - contacts.numbers.begin()];
 	return "";
 }
 
-size_t size(const storage& contacts)
+size_t size(const contact_list::storage& contacts)
 {
 	return contacts.names.size();
 }
