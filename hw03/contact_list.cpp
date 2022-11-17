@@ -7,7 +7,7 @@
 
 // TODO create implementation here!
 
-bool add(contact_list::storage& contacts, std::string_view name, contact_list::number_t number)
+bool contact_list::add(contact_list::storage& contacts, std::string_view name, contact_list::number_t number)
 {
 	if (name.empty())
 		return false;
@@ -20,7 +20,7 @@ bool add(contact_list::storage& contacts, std::string_view name, contact_list::n
 	return true;
 }
 
-contact_list::number_t get_number_by_name(contact_list::storage& contacts, std::string_view name)
+contact_list::number_t contact_list::get_number_by_name(contact_list::storage& contacts, std::string_view name)
 {
 	const auto ret = std::find(
 		contacts.names.begin(), contacts.names.end(), static_cast<std::string>(name));
@@ -29,7 +29,7 @@ contact_list::number_t get_number_by_name(contact_list::storage& contacts, std::
 	return -1;
 }
 
-std::string to_string(const contact_list::storage& contacts)
+std::string contact_list::to_string(const contact_list::storage& contacts)
 {
 	std::string result;
 	for (int i = 0; i < contacts.names.size(); i++)
@@ -39,7 +39,7 @@ std::string to_string(const contact_list::storage& contacts)
 	return result;
 }
 
-bool remove(contact_list::storage& contacts, std::string_view name)
+bool contact_list::remove(contact_list::storage& contacts, std::string_view name)
 {
 	if (name.empty())
 		return false;
@@ -56,7 +56,7 @@ bool remove(contact_list::storage& contacts, std::string_view name)
 	return false;
 }
 
-void sort(contact_list::storage& contacts)
+void contact_list::sort(contact_list::storage& contacts)
 {
 	std::map<std::string, int> dict_contacts;
 	for(int i = 0; i < contacts.names.size(); i++)
@@ -72,14 +72,14 @@ void sort(contact_list::storage& contacts)
 	}
 }
 
-std::string get_name_by_number(contact_list::storage& contacts, contact_list::number_t number)
+std::string contact_list::get_name_by_number(contact_list::storage& contacts, contact_list::number_t number)
 {
 	if (const auto ret = std::find(contacts.numbers.begin(), contacts.numbers.end(), number); ret != contacts.numbers.end())
 		return contacts.names[ret - contacts.numbers.begin()];
 	return "";
 }
 
-size_t size(const contact_list::storage& contacts)
+size_t contact_list::size(const contact_list::storage& contacts)
 {
 	return contacts.names.size();
 }
