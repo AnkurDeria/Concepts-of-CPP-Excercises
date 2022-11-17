@@ -44,9 +44,10 @@ bool remove(storage& contacts, std::string_view name)
 {
 	if (name.empty())
 		return false;
+
 	for(int i = 0; i < contacts.names.size(); i++)
 	{
-		if(name._Equal(contacts.names[i]))
+		if(name.compare(contacts.names[i]) == 0)
 		{
 			contacts.names.erase(contacts.names.begin() + i);
 			contacts.numbers.erase(contacts.numbers.begin() + i);
