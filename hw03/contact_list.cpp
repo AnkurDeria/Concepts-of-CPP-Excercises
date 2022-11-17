@@ -4,6 +4,7 @@
 #include <numeric>
 #include <sstream>
 #include <map>
+#include <ranges>
 
 // TODO create implementation here!
 using namespace contact_list;
@@ -14,7 +15,7 @@ bool add(storage& contacts, std::string_view name, number_t number)
 		return false;
 	if (number < 0)
 		return false;
-	if (std::ranges::find(contacts.names, name) != contacts.names.end())
+	if (std::ranges::find(contacts.names, static_cast<std::string>(name)) != contacts.names.end())
 		return false;
 	contacts.names.push_back(static_cast<std::string>(name));
 	contacts.numbers.push_back(number);
@@ -23,7 +24,8 @@ bool add(storage& contacts, std::string_view name, number_t number)
 
 number_t get_number_by_name(storage& contacts, std::string_view name)
 {
-	auto ret = std::find(contacts.names.begin(), contacts.names.end(), static_cast<std::string>(name));
+	const auto ret = std::ranges::find(
+		contacts.names, static_cast<std::string>(name));
 	if (ret != contacts.names.end())
 		return contacts.numbers[ret - contacts.names.begin()];
 	return -1;
@@ -57,24 +59,23 @@ bool remove(storage& contacts, std::string_view name)
 
 void sort(storage& contacts)
 {
-	std::map<std::string, int> dictContacts;
+	std::map<std::basic_string<char>, int> dict_contacts;
 	for(int i = 0; i < contacts.names.size(); i++)
 	{
-		dictContacts.insert(std::pair<std::string, number_t>(contacts.names[i], contacts.numbers[i]));
+		dict_contacts.try_emplace(contacts.names[i], contacts.numbers[i]);
 	}
 	contacts.names.clear();
 	contacts.numbers.clear();
-	for (const auto& tuple:dictContacts)
+	for (const auto& [name, number]:dict_contacts)
 	{
-		contacts.names.push_back(tuple.first);
-		contacts.numbers.push_back(tuple.second);
+		contacts.names.push_back(name);
+		contacts.numbers.push_back(number);
 	}
 }
 
 std::string get_name_by_number(storage& contacts, number_t number)
 {
-	auto ret = std::find(contacts.numbers.begin(), contacts.numbers.end(), number);
-	if (ret != contacts.numbers.end())
+	if (const auto ret = std::ranges::find(contacts.numbers, number); ret != contacts.numbers.end())
 		return contacts.names[ret - contacts.numbers.begin()];
 	return "";
 }
