@@ -56,6 +56,11 @@ struct vm_state {
     size_t pc = 0;
 
     /**
+     * output string
+     */
+    std::string output{};
+
+    /**
      * stores which id is given the next instruction that is registered.
      */
     size_t next_op_id = 0;
@@ -130,6 +135,13 @@ code_t assemble(const vm_state& vm, std::string_view input_program);
  */
 void register_instruction(vm_state& vm, std::string_view name,
                           const op_action_t &action);
+
+/**
+* Used to get top item from stack.
+*
+* @param stack: which stack to fetch top element from
+*/
+item_t get_item_from_stack(std::stack<item_t> stack);
 
 
 /**
