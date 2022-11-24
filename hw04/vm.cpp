@@ -93,13 +93,17 @@ vm_state create_vm(bool debug) {
         });
 
     register_instruction(state, "JMP", [](vm_state& vmstate, const item_t addr) {
-        
+        if (isnan(addr)) {
+            throw vm_segfault{ std::string{"cannot jump...."} };
+        }
         vmstate.pc = addr;
 		return true;
         });
 
     register_instruction(state, "JMPZ", [](vm_state& vmstate, const item_t addr) {
-        
+        if (isnan(addr)) {
+            throw vm_segfault{ std::string{"cannot jump...."} };
+        }
 	    if (get_item_from_stack(vmstate.stack) == 0)
 	    {
 	        vmstate.pc = addr;
