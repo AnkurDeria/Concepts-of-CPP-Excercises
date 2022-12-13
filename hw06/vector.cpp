@@ -12,24 +12,30 @@ namespace linalg
 
 	auto min(const Vector& x) -> float
 	{
-		return *std::ranges::min_element(x);
+		if (x.size() == 0) { throw std::invalid_argument({ "Vector has no elements" }); }
+		if (x.size() == 1) { return x[0]; }
+		return *std::min_element(x.begin(),x.end());
 	}
 
 	auto max(const Vector& x) -> float
 	{
-		return *std::ranges::max_element(x);
+		if (x.size() == 0) { throw std::invalid_argument({ "Vector has no elements" }); }
+		if (x.size() == 1) { return x[0]; }
+		return *std::max_element(x.begin(), x.end());
 	}
 
 	auto argmin(const Vector& x) -> std::size_t
 	{
-		
-		return std::ranges::min_element(x) - x.begin();
+		if (x.size() == 0) { throw std::invalid_argument({ "Vector has no elements" }); }
+		if (x.size() == 1) { return 0; }
+		return std::min_element(x.begin(), x.end()) - x.begin();
 	}
 
 	auto argmax(const Vector& x) -> std::size_t
 	{
-		
-		return std::ranges::max_element(x) - x.begin();
+		if (x.size() == 0) { throw std::invalid_argument({ "Vector has no elements" }); }
+		if (x.size() == 1) { return 0; }
+		return std::max_element(x.begin(), x.end()) - x.begin();
 	}
 
 	auto non_zeros(const Vector& x) -> std::size_t
@@ -58,7 +64,6 @@ namespace linalg
 
 	auto prod(const Vector& x) -> float
 	{
-		if (x.size() == 0) { return 0; }
 		float result{ 1.f };
 		for (const auto& item : x)
 		{
@@ -85,29 +90,18 @@ namespace linalg
 		{
 			sum += item * item;
 		}
-		return sum;
+		return std::sqrt(sum);
 	}
 
 	auto normalize(Vector& x) -> void
 	{
-		float magnitude{0.f};
-		for (const auto& item : x)
-		{
-			magnitude += item * item;
-		}
-		x /= magnitude;
+		x /= norm(x);
 	}
 
 	auto normalized(const Vector& x) -> Vector
 	{
-		float magnitude = 0;
-		for (const auto& item : x)
-		{
-			magnitude += item * item;
-		}
-		Vector newVec(x.size());
-		newVec.assign(x);
-		newVec /= magnitude;
+		Vector newVec(x);
+		normalize(newVec);
 		return newVec;
 	}
 
@@ -204,8 +198,8 @@ namespace linalg
 
 	auto operator-(float val, const Vector& x) -> Vector
 	{
-		Vector result(x);
-		result -= val;
+		Vector result(x.size(),val);
+		result -= x;
 		return result;
 	}
 
