@@ -5,7 +5,7 @@ namespace linalg
 {
 	auto operator<<(std::ostream& ostr, const Vector& x) -> std::ostream& {
 		ostr << "[ ";
-		std::ranges::copy(x, std::ostream_iterator<float>(ostr, " "));
+		std::copy(x.begin(), x.end(), std::ostream_iterator<float>(ostr, " "));
 		ostr << "]";
 		return ostr;
 	}
