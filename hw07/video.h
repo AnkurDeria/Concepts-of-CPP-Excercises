@@ -16,6 +16,9 @@ public:
         double duration = 0);
 
   // TODO: more member functions
+  virtual std::string_view get_type() const;
+
+  virtual size_t get_raw_size() const;
 
   resolution_t get_resolution() const;
   double get_duration() const;

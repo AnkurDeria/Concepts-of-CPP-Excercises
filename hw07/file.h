@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-
 #include "filecontent.h"
 
 
@@ -59,12 +58,13 @@ public:
      */
     const FileContent& get_content() const;
 
+    void update(std::unique_ptr<FileContent> new_content);
+
 protected:
     /**
      * File construction, only allowed to be called from sub-classes.
      */
-    File(FileContent&& content,
-         std::string_view name="");
+    File(FileContent&& content,  std::string_view name="");
 
     /**
      * Stored real file content.
@@ -73,11 +73,11 @@ protected:
     FileContent content;
 
     // TODO additional member variables
-
 private:
     /**
      * The file name.
      * Is empty as long as the file is not registered in a filesystem.
      */
     std::string name;
+    std::weak_ptr<Filesystem> filesystem;
 };

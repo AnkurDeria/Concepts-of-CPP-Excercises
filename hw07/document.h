@@ -10,6 +10,10 @@ public:
   Document(FileContent &&content = {});
   // TODO: more member functions
 
+  virtual std::string_view get_type() const;
+
+  virtual size_t get_raw_size() const;
+
   /**
    * Return the number of non-whitespace characters in the file content.
    */
