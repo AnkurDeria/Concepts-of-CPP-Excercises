@@ -21,13 +21,12 @@ namespace net {
 	void Connection::send(std::istream& data) const {
 		if (fd() < 0)
 			return;
-		char buffer[128];
-		data.read(buffer, 128);
-		while (data) {
-			auto read = data.gcount();
-			::send(fd_.unwrap(), buffer, read, 0);
-			data.read(buffer, 128);
-		}
+		data.seekg(0, std::ios::end);
+		auto size = data.tellg();
+		data.seekg(0, std::ios::beg);
+		std::string buffer(size, 0);
+		data.read(&buffer[0], size);
+		::send(fd_.unwrap(), buffer.data(), buffer.size(), 0);
 	}
 
 	/// Receive data from the underlying socket, and write it to the `std::ostream`.
@@ -42,16 +41,15 @@ namespace net {
 
 	/// Receive all data from the socket
 	ssize_t Connection::receive_all(std::ostream& stream) const {
-		int valread = 0, read;
-		char buf[1025];
-		do {
-			read = recv(fd(), buf, 1024, 0);
-			buf[read] = '\0';
-			valread += read;
-			stream << buf;
-		} while (read == 1024);
-
-		return valread;
+		ssize_t count = 0;
+		char buffer[128];
+		while (true) {
+			auto received = ::recv(fd_.unwrap(), buffer, sizeof(buffer), MSG_DONTWAIT);
+			if (received <= 0) break;
+			stream.write(buffer, received);
+			count += received;
+		}
+		return count;
 	}
 
 	/// Return the underlying file descriptor

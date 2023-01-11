@@ -96,11 +96,11 @@ namespace net {
 
 		if (destination.compare("localhost") == 0) {
 			serverIp = "127.0.0.1";
-			address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+			serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 		}
 		else
 		{
-			if (inet_aton(destination.c_str(), &address.sin_addr) == 0) 
+			if (inet_aton(destination.c_str(), &serv_addr.sin_addr) == 0)
 			{
 				struct hostent* host = gethostbyname(destination.c_str());
 				if (!host) {
