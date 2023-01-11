@@ -13,7 +13,7 @@ class Client {
    Client();
 
    // connect to a port on the localhost
-   Connection connect(int port);
+   Connection connect(uint16_t port);
 
    //Giving 2 arguments for test case
    // connect to a port on the address and port
