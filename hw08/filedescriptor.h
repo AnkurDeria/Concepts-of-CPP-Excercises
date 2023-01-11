@@ -34,9 +34,15 @@ public:
     // TODO: Implement both copy and move constructors and assignment for the ownership model
     //       described in the class description.
 
-    FileDescriptor(FileDescriptor&& other);
+    // Copy constructor
+    FileDescriptor(const FileDescriptor&) = delete;
+    // Move constructor
+    FileDescriptor(FileDescriptor&& other) noexcept;
 
-    FileDescriptor& operator=(FileDescriptor&& other);
+    // Copy assignment
+    FileDescriptor& operator=(const FileDescriptor&) = delete;
+    // Move assignment
+    FileDescriptor& operator=(FileDescriptor&& other) noexcept;
 
     /// Return the underlying file descriptor, if not present return -1 (this is quite standard for
     /// linux systems)
@@ -44,9 +50,5 @@ public:
 
 private:
     std::optional<int> fd_ {};
-
-    FileDescriptor(const FileDescriptor& other);
-
-    FileDescriptor& operator = (const FileDescriptor& other);
 };
 } // namespace net

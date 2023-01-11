@@ -14,29 +14,30 @@ namespace net {
 	void Connection::send(std::string_view data) const {
 		if (fd() < 0)
 			return;
-		::send(fd(), data.data(), data.length(), 0);
+		::send(fd(), data.data(), data.size(), 0);
 	}
 
 	/// Send data from an `std::istream` to the given file descriptor
 	void Connection::send(std::istream& data) const {
 		if (fd() < 0)
 			return;
-		std::ostringstream oss;
-		oss << data.rdbuf();
-
-		std::string strConst = oss.str();
-		const char* pStr = strConst.c_str();
-
-		::send(fd(), pStr, strConst.length(), 0);
+		char buffer[128];
+		data.read(buffer, 128);
+		while (data) {
+			auto read = data.gcount();
+			::send(fd_.unwrap(), buffer, read, 0);
+			data.read(buffer, 128);
+		}
 	}
 
 	/// Receive data from the underlying socket, and write it to the `std::ostream`.
 	ssize_t Connection::receive(std::ostream& stream) const {
-		char buf[1025];
-		int valread = recv(fd(), buf, 1024, 0);
-		buf[valread] = '\0';
-		stream << buf;
-		return valread;
+		char buffer[128];
+		auto read = ::recv(fd_.unwrap(), buffer, 128, 0);
+		if (read > 0) {
+			stream.write(buffer, read);
+		}
+		return read;
 	}
 
 	/// Receive all data from the socket

@@ -1,7 +1,7 @@
 #include "server.h"
 
 namespace net {
-    Server::Server(int port) {
+    Server::Server(uint16_t port) {
         socket.listen(port);
     }
 

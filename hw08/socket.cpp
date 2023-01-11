@@ -7,6 +7,7 @@
 #include <memory.h>
 #include <netdb.h>
 #include <errno.h>
+#include <functional>
 
 namespace net {
 	bool is_listening(int fd) {
@@ -20,13 +21,16 @@ namespace net {
 		}
 
 		if (val)
+		{
 			return true;
+		}
 		return false;
 	}
 
 	Socket::Socket() {
-		int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-		fd_ = FileDescriptor(sockfd);
+		int sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
+		this->fd_ = FileDescriptor(sockfd);
+		std::cout << "Socket = " << fd_ << std::endl;
 	}
 
 	// Bind and then listen on the given port. Listen on any incoming address.
@@ -37,20 +41,19 @@ namespace net {
 			return;
 
 		struct sockaddr_in address;
-		int opt = 1;
 		int addrlen = sizeof(address);
 
 		// Forcefully attaching socket to the port
-		if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+		if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &port, sizeof(port)) < 0) {
 			std::cout << "you can't use this port for now." << std::endl;
 		};
 
 		address.sin_family = AF_INET;
-		address.sin_addr.s_addr = INADDR_ANY;
+		address.sin_addr.s_addr = htonl(INADDR_ANY);
 		address.sin_port = htons(port);
 		memset(&(address.sin_zero), 0, 8);
 
-		if ((bind(server_fd, (struct sockaddr*)&address, sizeof(sockaddr))) < 0)
+		if ((::bind(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0)
 			return;
 		if (::listen(server_fd, port) < 0)
 			return;
@@ -64,15 +67,15 @@ namespace net {
 		if (fd() < 0)
 			return connection;
 
-
+		if (!is_listening(fd())) {
+			throw std::runtime_error("The socket is not listening");
+		}
 		std::cout << "waiting for a client ..." << std::endl;
+		
 
-		struct sockaddr_in address;
-		int addrlen = sizeof(struct sockaddr);
-
-		int new_socket;
+		int new_socket{-1};
 		do {
-			new_socket = ::accept(fd(), (struct sockaddr*)&address, (socklen_t*)&addrlen);
+			new_socket = ::accept(fd(), nullptr, nullptr);
 		} while (new_socket == -1);
 
 		std::cout << "connected (fd: " << new_socket << ")" << std::endl;
@@ -93,16 +96,26 @@ namespace net {
 
 		if (destination.compare("localhost") == 0) {
 			serverIp = "127.0.0.1";
+			address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 		}
-
+		else
+		{
+			if (inet_aton(destination.c_str(), &address.sin_addr) == 0) 
+			{
+				struct hostent* host = gethostbyname(destination.c_str());
+				if (!host) {
+					std::cout << "Incorrect host" << std::endl;
+				}
+				serv_addr.sin_addr = *((struct in_addr*)host->h_addr);
+			}
+		}
 		struct hostent* host = gethostbyname("localhost");
 
 		serv_addr.sin_family = AF_INET;
 		serv_addr.sin_port = htons(port);
-		serv_addr.sin_addr = *((struct in_addr*)host->h_addr);
 		bzero(&(serv_addr.sin_zero), 8);
 
-		if (::connect(sock, (struct sockaddr*)&serv_addr, sizeof(struct sockaddr)) < 0) {
+		if (::connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
 			// can't connect
 			std::cout << "Error in connection, code: " << errno << std::endl;
 			return connection;

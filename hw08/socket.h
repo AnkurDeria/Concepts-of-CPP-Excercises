@@ -2,6 +2,9 @@
 
 #include "connection.h"
 #include "filedescriptor.h"
+#include <netinet/in.h>
+#include <string>
+#include <system_error>
 
 namespace net {
 

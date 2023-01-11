@@ -2,6 +2,7 @@
 
 #include "filedescriptor.h"
 #include <istream>
+#include <cstdio>
 #include <span>
 #include <string_view>
 

@@ -11,7 +11,7 @@ namespace net {
  class Server {
  public:
   /// Create a server on a port
-  Server(int port);
+  Server(uint16_t  port);
 
   Connection accept();
 
