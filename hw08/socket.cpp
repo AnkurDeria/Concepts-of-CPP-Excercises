@@ -30,7 +30,7 @@ namespace net {
 	Socket::Socket() {
 		int sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
 		this->fd_ = FileDescriptor(sockfd);
-		std::cout << "Socket = " << fd_ << std::endl;
+		std::cout << "Socket = " << fd() << std::endl;
 	}
 
 	// Bind and then listen on the given port. Listen on any incoming address.

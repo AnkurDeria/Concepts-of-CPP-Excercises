@@ -4,7 +4,7 @@ namespace net {
     Client::Client() {
     }
 
-    Connection Client::connect(int port) {
+    Connection Client::connect(uint16_t port) {
         return socket.connect(port);
     }
 
