@@ -2,7 +2,8 @@
 #include <unistd.h>
 
 namespace net {
-
+    FileDescriptor::FileDescriptor() {
+    }
     FileDescriptor::FileDescriptor(int fd) : fd_{ fd } {}
 
     FileDescriptor::~FileDescriptor() {
