@@ -32,7 +32,7 @@ namespace net {
 
 	/// Receive data from the underlying socket, and write it to the `std::ostream`.
 	ssize_t Connection::receive(std::ostream& stream) const {
-		char buf[128];
+		char buf[129];
 		int valread = recv(fd(), buf, 128, 0);
 		buf[valread] = '\0';
 		stream << buf;
@@ -42,7 +42,7 @@ namespace net {
 	/// Receive all data from the socket
 	ssize_t Connection::receive_all(std::ostream& stream) const {
 		ssize_t valread{ 0 }, read;
-		char buf[128];
+		char buf[129];
 		do {
 			read = recv(fd(), buf, 128, 0);
 			buf[read] = '\0';
