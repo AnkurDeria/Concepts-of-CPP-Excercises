@@ -29,8 +29,7 @@ namespace net {
 
 	Socket::Socket() {
 		int sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
-		this->fd_ = FileDescriptor(sockfd);
-		std::cout << "Socket = " << fd() << std::endl;
+		fd_ = FileDescriptor(sockfd);
 	}
 
 	// Bind and then listen on the given port. Listen on any incoming address.
@@ -41,19 +40,20 @@ namespace net {
 			return;
 
 		struct sockaddr_in address;
+		int opt = 1;
 		int addrlen = sizeof(address);
 
 		// Forcefully attaching socket to the port
-		if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &port, sizeof(port)) < 0) {
+		if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
 			std::cout << "you can't use this port for now." << std::endl;
 		};
 
 		address.sin_family = AF_INET;
-		address.sin_addr.s_addr = htonl(INADDR_ANY);
+		address.sin_addr.s_addr = INADDR_ANY;
 		address.sin_port = htons(port);
 		memset(&(address.sin_zero), 0, 8);
 
-		if ((::bind(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0)
+		if ((bind(server_fd, (struct sockaddr*)&address, sizeof(sockaddr))) < 0)
 			return;
 		if (::listen(server_fd, port) < 0)
 			return;
@@ -67,15 +67,19 @@ namespace net {
 		if (fd() < 0)
 			return connection;
 
-		if (!is_listening(fd())) {
-			throw std::runtime_error("The socket is not listening");
+		if (fd() < 0 || !is_listening(fd())) {
+			throw std::runtime_error("the socket is invalid to call accept");
 		}
-		std::cout << "waiting for a client ..." << std::endl;
-		
 
-		int new_socket{-1};
+
+		std::cout << "waiting for a client ..." << std::endl;
+
+		struct sockaddr_in address;
+		int addrlen = sizeof(struct sockaddr);
+
+		int new_socket;
 		do {
-			new_socket = ::accept(fd(), nullptr, nullptr);
+			new_socket = ::accept(fd(), (struct sockaddr*)&address, (socklen_t*)&addrlen);
 		} while (new_socket == -1);
 
 		std::cout << "connected (fd: " << new_socket << ")" << std::endl;
@@ -86,42 +90,27 @@ namespace net {
 	/// Connect to the destination on the given port (be sure of endianness!).
 	Connection Socket::connect(std::string destination, uint16_t port) {
 		struct sockaddr_in serv_addr;
-		std::string serverIp = destination;
-
-		int sock = socket(AF_INET, SOCK_STREAM, 0);
-
+		int sock = fd();
 		Connection connection(FileDescriptor(-1));
-		if (sock < 0)
-			return connection;
-
-		if (destination.compare("localhost") == 0) {
-			serverIp = "127.0.0.1";
-			serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+		if (sock < 0) {
+			throw std::runtime_error("socket is not ready!");
 		}
-		else
-		{
-			if (inet_aton(destination.c_str(), &serv_addr.sin_addr) == 0)
-			{
-				struct hostent* host = gethostbyname(destination.c_str());
-				if (!host) {
-					std::cout << "Incorrect host" << std::endl;
-				}
-				serv_addr.sin_addr = *((struct in_addr*)host->h_addr);
-			}
-		}
-		struct hostent* host = gethostbyname("localhost");
+		
+		struct hostent* host = gethostbyname(destination.c_str());
 
 		serv_addr.sin_family = AF_INET;
 		serv_addr.sin_port = htons(port);
+		serv_addr.sin_addr = *((struct in_addr*)host->h_addr);
 		bzero(&(serv_addr.sin_zero), 8);
 
-		if (::connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+		if (::connect(sock, (struct sockaddr*)&serv_addr, sizeof(struct sockaddr)) < 0) {
 			// can't connect
 			std::cout << "Error in connection, code: " << errno << std::endl;
 			return connection;
 		}
-		connection.fd_ = fd();
-		this->fd_ = FileDescriptor(sock);
+
+		///connection.fd_ = FileDescriptor(sock);
+		connection.fd_ = std::move(fd_);
 		return connection;
 	}
 

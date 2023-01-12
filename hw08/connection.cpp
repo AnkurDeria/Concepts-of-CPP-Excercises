@@ -21,35 +21,36 @@ namespace net {
 	void Connection::send(std::istream& data) const {
 		if (fd() < 0)
 			return;
-		data.seekg(0, std::ios::end);
-		auto size = data.tellg();
-		data.seekg(0, std::ios::beg);
-		std::string buffer(size, 0);
-		data.read(&buffer[0], size);
-		::send(fd_.unwrap(), buffer.data(), buffer.size(), 0);
+		std::ostringstream oss;
+		oss << data.rdbuf();
+
+		std::string strConst = oss.str();
+		const char* pStr = strConst.c_str();
+
+		::send(fd(), pStr, strConst.length(), 0);
 	}
 
 	/// Receive data from the underlying socket, and write it to the `std::ostream`.
 	ssize_t Connection::receive(std::ostream& stream) const {
-		char buffer[128];
-		auto read = ::recv(fd_.unwrap(), buffer, 128, 0);
-		if (read > 0) {
-			stream.write(buffer, read);
-		}
-		return read;
+		char buf[128];
+		int valread = recv(fd(), buf, 128, 0);
+		buf[valread] = '\0';
+		stream << buf;
+		return valread;
 	}
 
 	/// Receive all data from the socket
 	ssize_t Connection::receive_all(std::ostream& stream) const {
-		ssize_t count = 0;
-		char buffer[128];
-		while (true) {
-			auto received = ::recv(fd_.unwrap(), buffer, sizeof(buffer), MSG_DONTWAIT);
-			if (received <= 0) break;
-			stream.write(buffer, received);
-			count += received;
-		}
-		return count;
+		ssize_t valread{ 0 }, read;
+		char buf[128];
+		do {
+			read = recv(fd(), buf, 128, 0);
+			buf[read] = '\0';
+			valread += read;
+			stream << buf;
+		} while (read == 128);
+
+		return valread;
 	}
 
 	/// Return the underlying file descriptor
