@@ -24,7 +24,7 @@ namespace net {
         return *this;
     }
 
-    int FileDescriptor::unwrap() const noexcept {
+    int FileDescriptor::unwrap() const {
         if (fd_.has_value()) {
             return fd_.value();
         }
