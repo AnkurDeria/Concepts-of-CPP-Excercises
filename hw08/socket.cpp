@@ -120,8 +120,8 @@ namespace net {
 			std::cout << "Error in connection, code: " << errno << std::endl;
 			return connection;
 		}
-		connection.fd_ = this->fd_;
-		this->fd_ = FileDescriptor(sock)
+		connection.fd_ = fd();
+		this->fd_ = FileDescriptor(sock);
 		return connection;
 	}
 
