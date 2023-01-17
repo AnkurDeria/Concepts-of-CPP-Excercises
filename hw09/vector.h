@@ -37,7 +37,14 @@ public:
 		std::copy(copy._data.get(), copy._data.get() + _size, _data.get());
 	}
 
-	Vector(Vector&& move) : _size(move._size), _capacity(move._capacity), _data(std::move(move._data)) {
+	Vector(Vector&& move) : _size(std::move(move._size)), _capacity(std::move(move._capacity))
+	{
+		_data = std::make_unique<T[]>(_size);
+		for (size_t i = 0; i < _size; ++i)
+		{
+			_data[i] = std::move(move._data[i]);
+		}
+		
 	}
 
 	/**
@@ -71,7 +78,7 @@ public:
 	 */
 	void push_back(const T& value) {
 		if (_size == _capacity) {
-			resize(_capacity * growth_factor);
+			resize(calculate_capacity(_size + 1));
 		}
 		_data[_size++] = value;
 	}
@@ -81,7 +88,7 @@ public:
 	 */
 	void push_back(T&& value) {
 		if (_size == _capacity) {
-			resize(_capacity * growth_factor);
+			resize(calculate_capacity(_size + 1));
 		}
 		_data[_size++] = std::move(value);
 	}
@@ -160,6 +167,12 @@ private:
 	 * If necessary, double `_capacity` using `growth_factor`.
 	 */
 	size_t calculate_capacity(size_t new_size) {
+		if (_capacity == 0) {
+			return new_size;
+		}
+		if (_capacity >= new_size) {
+			return _capacity;
+		}
 		size_t new_capacity = _capacity;
 		while (new_size > new_capacity) {
 			new_capacity *= growth_factor;
@@ -174,7 +187,7 @@ private:
 	*/
 	void resize(size_t new_capacity) {
 		auto new_data = std::make_unique<T[]>(new_capacity);
-		std::copy(_data.get(), _data.get() + _size, new_data.get());
+		std::move(_data.get(), _data.get() + _size, new_data.get());
 		_data = std::move(new_data);
 		_capacity = new_capacity;
 	}
