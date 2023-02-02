@@ -42,12 +42,7 @@ public:
      * Is the key in the map?
      */
     constexpr bool contains(const K &key) const {
-        for (const auto& [k, v] : values) {
-            if (k == key) {
-                return true;
-            }
-        }
-        return false;
+        return std::find_if(values.begin(), values.end(), [&key](const auto& entry) { return entry.first == key; }) != values.end();
     }
 
     /**
