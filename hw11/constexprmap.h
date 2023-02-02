@@ -42,19 +42,24 @@ public:
      * Is the key in the map?
      */
     constexpr bool contains(const K &key) const {
-        return std::find_if(values.begin(), values.end(), [&key](const auto& entry) { return entry.first == key; }) != values.end();
+        auto it = std::find_if(values.begin(), values.end(), [&](auto const& p) {
+            return p.first == key;
+            });
+
+        return (it != values.end());
     }
 
     /**
      * Get a key's value
      */
     constexpr const V &get(const K &key) const {
-        for (const auto& [k, v] : values) {
-            if (k == key) {
-                return v;
-            }
-        }
-        throw std::out_of_range("CexprMap: key not found");
+        auto it = std::find_if(values.begin(), values.end(), [&](auto const& p) {
+            return p.first == key;
+            });
+
+        if (it == values.end())
+            throw std::out_of_range("no key in the map");
+        return it->second;
     }
 
     /**
@@ -70,12 +75,12 @@ private:
      * Throws std::invalid_argument on duplicate key.
      */
     constexpr void verify_no_duplicates() const {
-        for (size_t i = 0; i < count - 1; ++i) {
-            for (size_t j = i + 1; j < count; ++j) {
-                if (values[i].first == values[j].first) {
-                    throw std::invalid_argument("CexprMap: duplicate key found");
-                }
-            }
+        for (auto it = values.begin(); it != values.end(); it++) {
+            auto it1 = std::find_if(it + 1, values.end(), [&](auto const& p) {
+                return p.first == it->first;
+                });
+            if (it1 != values.end())
+                throw std::invalid_argument("invalid");
         }
     }
 
@@ -84,14 +89,11 @@ private:
      *  - `values.end()` if the key is not found.
      */
     constexpr auto find(const K &key) const {
-        auto iter = values.begin();
-        auto end = values.end();
-        for (; iter != end; ++iter) {
-            if (iter->first == key) {
-                break;
-            }
+        for (auto it = values.begin(); it != values.end(); it++) {
+            if (it->first == key)
+                return it;
         }
-        return iter;
+        return values.end();
     }
 
     /**
@@ -109,7 +111,7 @@ private:
  */
 template<typename K, typename V, typename... Entries>
 constexpr auto create_cexpr_map(Entries&&... entry) {
-    return CexprMap<K, V, sizeof...(entry)>{ std::forward<Entries>(entry)... };
+    return CexprMap<K, V, sizeof...(Entries)>{ entry... };
 }
 
 /**
